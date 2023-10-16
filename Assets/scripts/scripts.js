@@ -8,7 +8,8 @@ var stateSelect = $('#stateSelect');
 var today = $('#today');
 var fiveDay = $('#fiveDay');
 var heading = $('#heading');
-var cities = [];
+var cities = JSON.parse(localStorage.getItem("cities")) || [];
+
 var states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
   "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
   "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
@@ -25,6 +26,7 @@ for (var x = 0; x < states.length; x++) {
   var option = $(`<option value="${code}">${state}</option>`);
   stateSelect.append(option)
 }
+getLatLong(cities[0].city,cities[0].state);
 
 citySearch.on('submit', displayWeather);
 
@@ -33,8 +35,10 @@ function displayWeather(event) {
   if (event.target[1].value == 'State' || event.target[0].value.length < 1) {
     $('#exampleModal').modal('show');
   } else {
-    var latLong;
-    latLong = getLatLong(event.target[0].value, event.target[1].value);
+    cities.unshift({city : event.target[0].value, state : event.target[1].value })
+    localStorage.setItem("cities", JSON.stringify(cities));
+    getLatLong(event.target[0].value, event.target[1].value);
+
   }
 }
 
@@ -113,11 +117,11 @@ function displayFiveDay(data) {
     } 
     console.log(data.list[x].dt_txt);
     if (data.list[x].weather[0].main == 'Clouds') {
-      icon = '<i class="bi bi-clouds-fill"></i>';
+      icon = '<h2 class="bi bi-clouds-fill "></h2>';
     } else if (data.list[x].weather[0].main == 'Clear') {
-      icon = '<i class="bi bi-brightness-high"></i>';
+      icon = '<h2class="bi bi-brightness-high"></h2>';
     } else {
-      icon = '<i class="bi bi-cloud-rain-heavy"></i>';
+      icon = '<h2 class="bi bi-cloud-rain-heavy"></h2>';
     }
     var day = $('<div class="col-2 p-2 d-flex flex-column day"></div>');
     var lineOne = $(`<h3>${dayjs(data.list[x].dt_txt).format('MM/DD/YYYY')}</h2>`);
