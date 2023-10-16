@@ -8,6 +8,7 @@ var stateSelect = $('#stateSelect');
 var today = $('#today');
 var fiveDay = $('#fiveDay');
 var heading = $('#heading');
+var textArea = $('#city');
 var cities = JSON.parse(localStorage.getItem("cities")) || [];
 
 var states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
@@ -27,13 +28,16 @@ for (var x = 0; x < states.length; x++) {
   stateSelect.append(option)
 }
 if (cities.length > 0) {
+  for (var x = 0; x < cities.length; x++) {
+    console.log(x)
+    searchContainer.append(`<button  class="cityBtn m-1 Btn rounded fs-6" data-state = "${cities[x].state}" data-city = "${cities[x].city}"> ${cities[x].city}</button>`);
+  }
   getLatLong(cities[0].city, cities[0].state);
+  
+}
 
-}
-for (var x = 0; x < 10; x++) {
-  searchContainer.append(`<button  class="cityBtn m-1 Btn rounded fs-6" data-state = "${cities[x].state}" data-city = "${cities[x].city}"> ${cities[x].city}</button>`)
-}
-citySearch.on('submit', displayWeather);
+
+citySearch.on('submit', formSubmit);
 searchContainer.on('click', '.cityBtn', cityBtnPress)
 
 function cityBtnPress(event) {
@@ -48,7 +52,7 @@ function clearForecasts() {
   today.html('');
   fiveDay.html('');
 }
-function displayWeather(event) {
+function formSubmit(event) {
   event.preventDefault();
 
   if (event.target[1].value == 'State' || event.target[0].value.length < 1) {
@@ -61,6 +65,7 @@ function displayWeather(event) {
     localStorage.setItem("cities", JSON.stringify(cities));
     citySearch.after(`<button class="cityBtn m-1 Btn rounded fs-6" data-city = "${event.target[0].value}" data-state = "${event.target[1].value}">${event.target[0].value}</button>`);
     getLatLong(event.target[0].value, event.target[1].value);
+    textArea.val('');
   }
 }
 
@@ -99,7 +104,6 @@ function getForecast(coords) {
       return response.json();
     })
     .then(function (data) {
-      console.log(data)
       displayFiveDay(data);
     })
 }
@@ -156,7 +160,7 @@ function displayFiveDay(data) {
     day.append(temp);
     var wind = $(`<h3>Wind: ${data.list[x].wind.speed} MPH</h3>`);
     day.append(wind);
-    var hum = $(`<h3>Humidity: ${data.list[x].main.humidity}</h3> %`);
+    var hum = $(`<h3>Humidity: ${data.list[x].main.humidity} %</h3>`);
     day.append(hum);
 
     fiveDay.append(day);
