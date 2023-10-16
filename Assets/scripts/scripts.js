@@ -5,7 +5,8 @@ var geocode = 'http://api.openweathermap.org/geo/1.0/direct';
 var citySearch = $('#weatherForm');
 var submitBtn = $('#submitBtn');
 var stateSelect = $('#stateSelect');
-const today = [];
+var today = $('#today');
+var fiveDay = $('#fiveDay');
 var cities = [];
 var states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
 "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland",
@@ -33,7 +34,6 @@ function displayWeather(event){
     }else{
         var latLong;
         latLong = getLatLong(event.target[0].value,event.target[1].value);   
-        console.log(today)     
     }
 }
 
@@ -55,13 +55,48 @@ function getLatLong (city,state){
 }
 
 function getForecast(coords) {
-  var link = `${forecast}?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`
+  var link = `${weather}?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`
   fetch(link)
   .then(function(response){
       return response.json();
   })
   .then(function(data){
-      console.log(data.city.name)
-      cities.push(data.city.name);
-  })
+      cities.push(data.name);
+      displayToday(data);
+      
+    })
+    
+    link = `${forecast}?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`
+    fetch(link)
+    .then(function(response){
+      return response.json();
+    })
+    .then(function(data){
+      console.log(data)
+    })
 }
+
+function displayToday (data){
+    console.log(data);
+    today.css('border','solid 1px black');
+    var date = dayjs().format('MM/DD/YYYY')
+    var icon;
+    if(data.weather[0].main == 'Clouds'){
+      icon = '<i class="bi bi-clouds-fill"></i>';
+    }else if(data.weather[0].main == 'Clear'){
+      icon = '<i class="bi bi-brightness-high"></i>';
+    }else{
+      icon = '<i class="bi bi-cloud-rain-heavy"></i>';
+    }
+    var lineOne = $(`<h1>${data.name} ${date} ${icon}</h1>`);
+    today.append(lineOne);
+    var temp = $(`<h2>Temp: ${data.main.temp}°F</h2>`);
+    today.append(temp);
+    var wind = $(`<h2>Wind: ${data.wind.speed} MPH</h2>`);
+    today.append(wind);
+    var hum = $(`<h2>Humidity: ${data.main.humidity} %`);
+    today.append(hum);
+}
+
+/* <i class="bi bi-clouds-fill"></i>
+<i class="bi bi-cloud-rain-heavy"></i> */
