@@ -2,8 +2,8 @@ var key = '0015257cf3d37453b04b0cfba52caeed'
 var forecast = 'https://api.openweathermap.org/data/2.5/forecast';
 var weather = 'https://api.openweathermap.org/data/2.5/weather';
 var geocode = 'http://api.openweathermap.org/geo/1.0/direct';
+var searchContainer = $('#searchContainer');
 var citySearch = $('#weatherForm');
-var submitBtn = $('#submitBtn');
 var stateSelect = $('#stateSelect');
 var today = $('#today');
 var fiveDay = $('#fiveDay');
@@ -26,21 +26,44 @@ for (var x = 0; x < states.length; x++) {
   var option = $(`<option value="${code}">${state}</option>`);
   stateSelect.append(option)
 }
-getLatLong(cities[0].city,cities[0].state);
+if (cities.length > 0) {
+  getLatLong(cities[0].city, cities[0].state);
 
+}
+for (var x = 0; x < 10; x++) {
+  searchContainer.append(`<button  class="cityBtn m-1 Btn rounded fs-6" data-state = "${cities[x].state}" data-city = "${cities[x].city}"> ${cities[x].city}</button>`)
+}
 citySearch.on('submit', displayWeather);
+searchContainer.on('click', '.cityBtn', cityBtnPress)
 
+function cityBtnPress(event) {
+  var city = $(event.target).attr('data-city');
+  var state = $(event.target).attr('data-state');
+  clearForecasts();
+  getLatLong(city, state);
+}
+
+function clearForecasts() {
+  heading.removeClass('d-block').addClass('d-none');
+  today.html('');
+  fiveDay.html('');
+}
 function displayWeather(event) {
   event.preventDefault();
+
   if (event.target[1].value == 'State' || event.target[0].value.length < 1) {
     $('#exampleModal').modal('show');
   } else {
-    cities.unshift({city : event.target[0].value, state : event.target[1].value })
+    if (cities.length > 0) {
+      clearForecasts();
+    }
+    cities.unshift({ city: event.target[0].value, state: event.target[1].value })
     localStorage.setItem("cities", JSON.stringify(cities));
+    citySearch.after(`<button class="cityBtn m-1 Btn rounded fs-6" data-city = "${event.target[0].value}" data-state = "${event.target[1].value}">${event.target[0].value}</button>`);
     getLatLong(event.target[0].value, event.target[1].value);
-
   }
 }
+
 
 function getLatLong(city, state) {
   var link = `${geocode}?q=${city},${state},1&limit=1&appid=${key}`;
@@ -66,7 +89,6 @@ function getForecast(coords) {
       return response.json();
     })
     .then(function (data) {
-      cities.push(data.name);
       displayToday(data);
 
     })
@@ -96,12 +118,12 @@ function displayToday(data) {
   var lineOne = $(`<h1>${data.name} ${date} ${icon}</h1>`);
   today.append(lineOne);
   var temp = $(`<h2>Temp: ${data.main.temp}°F</h2>`);
-  today.append(temp); 
+  today.append(temp);
   var wind = $(`<h2>Wind: ${data.wind.speed} MPH</h2>`);
   today.append(wind);
   var hum = $(`<h2>Humidity: ${data.main.humidity} %</h2>`);
-  console.log(hum);
   today.append(hum);
+
 }
 
 function displayFiveDay(data) {
@@ -109,17 +131,20 @@ function displayFiveDay(data) {
   heading.removeClass('d-none').addClass('d-block');
   for (var x = 0; x < data.list.length; x++) {
     var today = dayjs().format('DD');
-    if(dayjs(data.list[x].dt_txt).format('DD') == today){
+    var y = 0;
+    if (dayjs().format('DD') == today && dayjs().format('H') < 9 && x === (data.list.length-1)){
+    y = 1;
+    }else if (dayjs(data.list[x].dt_txt).format('DD') == today) {
       continue;
     }
-    if(dayjs(data.list[x].dt_txt).format('H') != '12'){
+    if (dayjs(data.list[x].dt_txt).format('H') != '12' && y!=1) {
       continue;
-    } 
-    console.log(data.list[x].dt_txt);
+    }
+
     if (data.list[x].weather[0].main == 'Clouds') {
       icon = '<h2 class="bi bi-clouds-fill "></h2>';
     } else if (data.list[x].weather[0].main == 'Clear') {
-      icon = '<h2class="bi bi-brightness-high"></h2>';
+      icon = '<h2 class="bi bi bi-brightness-low-fill"></h2>';
     } else {
       icon = '<h2 class="bi bi-cloud-rain-heavy"></h2>';
     }
@@ -133,7 +158,7 @@ function displayFiveDay(data) {
     day.append(wind);
     var hum = $(`<h3>Humidity: ${data.list[x].main.humidity}</h3> %`);
     day.append(hum);
-    
+
     fiveDay.append(day);
   }
 }
