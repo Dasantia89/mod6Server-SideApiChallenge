@@ -54,3 +54,14 @@ function getLatLong (city,state){
 });
 }
 
+function getForecast(coords) {
+  var link = `${forecast}?lat=${coords[0]}&lon=${coords[1]}&appid=${key}&units=imperial`
+  fetch(link)
+  .then(function(response){
+      return response.json();
+  })
+  .then(function(data){
+      console.log(data.city.name)
+      cities.push(data.city.name);
+  })
+}
