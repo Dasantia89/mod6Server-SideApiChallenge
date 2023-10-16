@@ -37,3 +37,20 @@ function displayWeather(event){
     }
 }
 
+function getLatLong (city,state){
+  var link = `${geocode}?q=${city},${state},1&limit=1&appid=${key}`;
+  fetch(link)
+.then(function (response) {
+  return response.json();
+})
+.then(function (data) {
+  if(data.length == 0){
+      $('#exampleModal').modal('show');
+      coordinates = 0;
+  }else{
+    var coordinates = [data[0].lat, data[0].lon];
+      getForecast(coordinates);
+  }
+});
+}
+
