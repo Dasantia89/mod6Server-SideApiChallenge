@@ -18,7 +18,7 @@
     </header>
 
     <main class="row">
-        <aside class="col-3 d-flex flex-column border-3 border-end border-primary">
+        <aside class="col-lg-2 d-flex flex-column border-3 border-end border-primary">
             <h2>Search for a City:</h2>
             <form id='weatherForm' class="d-flex flex-column">
                 <textarea id="city" cols="30" rows="1" class="p-2 mb-2 rounded fs-4"
@@ -38,11 +38,12 @@
             <button class="cityBtn my-1 rounded">Chicago</button>
             <button class="cityBtn my-1 rounded">Austin</button> -->
         </aside>
-        <section class="col-8 d-flex flex-column">
+        <section class="col-9 d-flex flex-column">
             <section class="col-12 d-flex flex-column p-1" id="today">
 
             </section>
-            <section class="col-12 d-flex justify-content-between" id="fiveDay">
+            <h2 class="m-1 d-none" id="heading">5-Day Forecast</h2>
+            <section class="col-12 mt-2 d-flex justify-content-between text-wrap" id="fiveDay">
 
             </section>
         </section>
