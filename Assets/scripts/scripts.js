@@ -125,6 +125,8 @@ function getLatLong(city, state) {
         var coordinates = [data[0].lat, data[0].lon];
         getForecast(coordinates);
       }
+    }).catch(function(error){
+      console.log(error);
     });
 }
 
