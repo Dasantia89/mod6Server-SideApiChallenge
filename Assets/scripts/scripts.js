@@ -3,7 +3,7 @@ var key = '0015257cf3d37453b04b0cfba52caeed'
 // api links 
 var forecast = 'https://api.openweathermap.org/data/2.5/forecast';
 var weather = 'https://api.openweathermap.org/data/2.5/weather';
-var geocode = 'http://api.openweathermap.org/geo/1.0/direct';
+var geocode = 'https://api.openweathermap.org/geo/1.0/direct';
 // element references 
 var searchContainer = $('#searchContainer');
 var citySearch = $('#weatherForm');
@@ -172,10 +172,13 @@ function displayToday(data) {
 
 }
 
-// display the 5 day forecast 
+// display the weather for the next 5 days at noon. If the time now is before 9AM the weather at noon will not be retrieved on day 5.
+// Retrieve the last entry and use that instead for day 5
 function displayFiveDay(data) {
   var icon;
   heading.removeClass('d-none').addClass('d-block');
+
+  // iterate through forecasts  and only display when hour = 12 
   for (var x = 0; x < data.list.length; x++) {
     var today = dayjs().format('DD');
     var y = 0;
@@ -195,6 +198,7 @@ function displayFiveDay(data) {
     } else {
       icon = '<h2 class="bi bi-cloud-rain-heavy"></h2>';
     }
+
     var day = $('<div class="col-2 p-2 d-flex flex-column day"></div>');
     var lineOne = $(`<h3>${dayjs(data.list[x].dt_txt).format('MM/DD/YYYY')}</h2>`);
     day.append(lineOne);
